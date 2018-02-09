@@ -1,6 +1,35 @@
 #+PROPERTY: header-args :tangle yes
 * basher
-  #+BEGIN_SRC sh
-    # basher.sh
+** ~/bin
+   #+BEGIN_SRC sh
+     PATH=$PATH:~/bin
 
-  #+END_SRC
+   #+END_SRC
+** Use trash instead of delete
+   #+BEGIN_SRC sh
+     # Aliases for trash-cli
+     alias rm='echo "Do not use rm, instead use del which is aliased to trash-put"'
+     alias del='trash-put'
+
+   #+END_SRC
+** Convenience aliases
+   #+BEGIN_SRC sh
+     # Aliases for ls
+     alias ll='ls -Alh'
+     alias la='ls -lah'
+     alias l='ls -CFlh'
+     alias lsd="ls -alF | grep /$"
+     alias lr='ls -CFlhAR'
+
+     # Miscellaneous Aliases
+     alias c='clear'
+     alias h="history|grep "
+     alias f="find . |grep "
+
+     # Directory navigation
+     alias ..='cd ..'
+     alias ...='cd ../..'
+     alias ....='cd ../../..'
+     alias .....='cd ../../../..'
+
+   #+END_SRC
