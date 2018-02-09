@@ -1,0 +1,6 @@
+#+PROPERTY: header-args :tangle yes
+* basher
+  #+BEGIN_SRC sh
+    # basher.sh
+
+  #+END_SRC

@@ -1,3 +1,6 @@
+#Ignore generated .sh files
+*.sh
+
 # Compiled
 *.elc
 
