@@ -1,4 +1,12 @@
 * basher
+
+** Notes
+   .bash_profile is called for login shells, and .bashrc is called for non-login shells. If a variable is already defined before .bash_profile (c.f. $PATH) and the value is changed, the variable and its value will be inherited by the subshell. However newly defined variables in .bash_profile will not be inherited by the subshells, thus should be defined in .bashrc. Aliases and shell functions are not inherited, thus should be defined in .bashrc. To make those aliases and shell functions available to login shells, simply call .bashrc from .bash_profile.
+
+   To make it convenient to reuse these configuration on multiple machines, where there may be specific local .bash_profile and .bashrc settings, two files are created: ._bash_profile and ._bashrc. Source ._bash_profile from the local .bash_profile, and ._bashrc from the local .bashrc. Private and local specific configurations should be kept in the local machine specific .bash_profile and .bashrc files on those specific machines and not shared in this library.
+
+(Some systems have a convention to use a .bash_aliases file and the system-specific .bash_profile and .bashrc call the .bash_aliases file.)
+
 ** ._bash_profile.sh
    :PROPERTIES:
    :header-args: :tangle ~/._bash_profile.sh :comments org
