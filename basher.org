@@ -96,70 +96,85 @@
       # Make directory then cd
       mcd () { mkdir -p $1; cd $1; }
 
+      # up() {
+      #     local d=""
+      #     limit=$1
+      #     for ((i=1 ; i <= limit ; i++))
+      #     do
+      # 	d=$d/..
+      #     done
+      #     d=$(echo $d | sed 's/^\///')
+      #     if [ -z "$d" ]; then
+      # 	d=..
+      #     fi
+      #     cd $d
+      # }
+
+      up() { cd $(eval printf '../'%.0s {1..$1}) && pwd; }
+
+      function fawk {
+	  first="awk '{print "
+	  last="}'"
+	  cmd="${first}\$${1}${last}"
+	  eval $cmd
+      }
+
       # Archives
-      function extract {
-	  if [ -z "$1" ]; then
-	      # display usage if no parameters given
-	      echo "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
-	      echo "       extract <path/file_name_1.ext> [path/file_name_2.ext] [path/file_name_3.ext]"
-	      return 1
-	  else
-	      for n in $@
-	      do
-		  if [ -f "$n" ] ; then
-		      case "${n%,}" in
-			  ,*.tar.bz2|*.tar.gz|*.tar.xz|*.tbz2|*.tgz|*.txz|*.tar) 
-			      tar xvf "$n"       ;;
-			  ,*.lzma)      unlzma ./"$n"      ;;
-			  ,*.bz2)       bunzip2 ./"$n"     ;;
-			  ,*.rar)       unrar x -ad ./"$n" ;;
-			  ,*.gz)        gunzip ./"$n"      ;;
-			  ,*.zip)       unzip ./"$n"       ;;
-			  ,*.z)         uncompress ./"$n"  ;;
-			  ,*.7z|*.arj|*.cab|*.chm|*.deb|*.dmg|*.iso|*.lzh|*.msi|*.rpm|*.udf|*.wim|*.xar)
-			      7z x ./"$n"        ;;
-			  ,*.xz)        unxz ./"$n"        ;;
-			  ,*.exe)       cabextract ./"$n"  ;;
-			  ,*)
-			      echo "extract: '$n' - unknown archive method"
-			      return 1
-			      ;;
-		      esac
-		  else
-		      echo "'$n' - file does not exist"
-		      return 1
-		  fi
-	      done
-	  fi
-      }
+      # function extract {
+      #     if [ -z "$1" ]; then
+      # 	# display usage if no parameters given
+      # 	echo "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
+      # 	echo "       extract <path/file_name_1.ext> [path/file_name_2.ext] [path/file_name_3.ext]"
+      # 	return 1
+      #     else
+      # 	for n in $@
+      # 	do
+      # 	    if [ -f "$n" ] ; then
+      # 		case "${n%,}" in
+      # 		    *.tar.bz2|*.tar.gz|*.tar.xz|*.tbz2|*.tgz|*.txz|*.tar) 
+      # 			tar xvf "$n"       ;;
+      # 		    *.lzma)      unlzma ./"$n"      ;;
+      # 		    *.bz2)       bunzip2 ./"$n"     ;;
+      # 		    *.rar)       unrar x -ad ./"$n" ;;
+      # 		    *.gz)        gunzip ./"$n"      ;;
+      # 		    *.zip)       unzip ./"$n"       ;;
+      # 		    *.z)         uncompress ./"$n"  ;;
+      # 		    *.7z|*.arj|*.cab|*.chm|*.deb|*.dmg|*.iso|*.lzh|*.msi|*.rpm|*.udf|*.wim|*.xar)
+      # 			7z x ./"$n"        ;;
+      # 		    *.xz)        unxz ./"$n"        ;;
+      # 		    *.exe)       cabextract ./"$n"  ;;
+      # 		    *)
+      # 			echo "extract: '$n' - unknown archive method"
+      # 			return 1
+      # 			;;
+      # 		esac
+      # 	    else
+      # 		echo "'$n' - file does not exist"
+      # 		return 1
+      # 	    fi
+      # 	done
+      #     fi
+      # }
 
-      # Colors
-      # http://misc.flogisoft.com/bash/tip_colors_and_formatting
-      bash-color-16() {
-	  for clbg in {40..47} {100..107} 49 ; do
-	      #Foreground
-	      for clfg in {30..37} {90..97} 39 ; do
-		  #Formatting
-		  for attr in 0 1 2 4 5 7 ; do
-		      #Print the result
-		      echo -en "\e[${attr};${clbg};${clfg}m ^[${attr};${clbg};${clfg}m \e[0m"
-		  done
-		  echo #Newline
-	      done
-	  done
-      }
-
-      bash-color-256() {
-	  for fgbg in 38 48 ; do #Foreground/Background
-	      for color in {0..256} ; do #Colors
-		  #Display the color
-		  echo -en "\e[${fgbg};5;${color}m ${color}\t\e[0m"
-		  #Display 10 colors per lines
-		  if [ $((($color + 1) % 10)) == 0 ] ; then
-		      echo #New line
-		  fi
-	      done
-	      echo #New line
+      extract () { # extract files. Ignore files with improper extensions.
+	  local x
+	  ee() { # echo and execute
+	      echo "$@"
+	      $1 "$2"
+	  }
+	  for x in "$@"; do
+	      [[ -f $x ]] || continue
+	      case "$x" in
+		  ,*.tar.bz2 | *.tbz2 )    ee "tar xvjf" "$x"  ;;
+		  ,*.tar.gz | *.tgz ) ee "tar xvzf" "$x"   ;;
+		  ,*.bz2 )             ee "bunzip2" "$x"   ;;
+		  ,*.rar )             ee "unrar x" "$x"   ;;
+		  ,*.gz )              ee "gunzip" "$x"    ;;
+		  ,*.tar )             ee "tar xvf" "$x"   ;;
+		  ,*.zip )             ee "unzip" "$x"     ;;
+		  ,*.Z )               ee "uncompress" "$x" ;;
+		  ,*.7z )              ee "7z x" "$x"      ;;
+	      esac
 	  done
       }
 
@@ -203,3 +218,80 @@
 
 
    #+END_SRC
+
+*** Prompts
+    #+BEGIN_SRC sh
+      # https://serverfault.com/questions/3743/what-useful-things-can-one-add-to-ones-bashrc
+      smiley_prompt() {
+	  RESET="\[\017\]"
+	  NORMAL="\[\033[0m\]"
+	  RED="\[\033[31;1m\]"
+	  YELLOW="\[\033[33;1m\]"
+	  WHITE="\[\033[37;1m\]"
+	  SMILEY="${WHITE}:)${NORMAL}"
+	  FROWNY="${RED}:(${NORMAL}"
+	  SELECT="if [ \$? = 0 ]; then echo \"${SMILEY}\"; else echo \"${FROWNY}\"; fi"
+
+	  # Throw it all together 
+	  PS1="${RESET}${YELLOW}\h${NORMAL} \`${SELECT}\` ${YELLOW}>${NORMAL} "
+      }
+
+      function __setprompt {
+	local BLUE="\[\033[0;34m\]"
+	local NO_COLOUR="\[\033[0m\]"
+	local SSH_IP=`echo $SSH_CLIENT | awk '{ print $1 }'`
+	local SSH2_IP=`echo $SSH2_CLIENT | awk '{ print $1 }'`
+	if [ $SSH2_IP ] || [ $SSH_IP ] ; then
+	  local SSH_FLAG="@\h"
+	fi
+	PS1="$BLUE[\$(date +%H:%M)][\u$SSH_FLAG:\w]\\$ $NO_COLOUR"
+	PS2="$BLUE>$NO_COLOUR "
+	PS4='$BLUE+$NO_COLOUR '
+      }
+
+    #+END_SRC
+*** Colors
+    #+BEGIN_SRC sh
+      colors_for_manpages() {
+	  export LESS_TERMCAP_mb=$'\E[01;31m'
+	  export LESS_TERMCAP_md=$'\E[01;31m'
+	  export LESS_TERMCAP_me=$'\E[0m'
+	  export LESS_TERMCAP_se=$'\E[0m'
+	  export LESS_TERMCAP_so=$'\E[01;44;33m'
+	  export LESS_TERMCAP_ue=$'\E[0m'
+	  export LESS_TERMCAP_us=$'\E[01;32m'
+      }
+
+      # Colors
+      # http://misc.flogisoft.com/bash/tip_colors_and_formatting
+      bash-color-16() {
+	  for clbg in {40..47} {100..107} 49 ; do
+	      #Foreground
+	      for clfg in {30..37} {90..97} 39 ; do
+		  #Formatting
+		  for attr in 0 1 2 4 5 7 ; do
+		      #Print the result
+		      echo -en "\e[${attr};${clbg};${clfg}m ^[${attr};${clbg};${clfg}m \e[0m"
+		  done
+		  echo #Newline
+	      done
+	  done
+      }
+
+      bash-color-256() {
+	  for fgbg in 38 48 ; do #Foreground/Background
+	      for color in {0..256} ; do #Colors
+		  #Display the color
+		  echo -en "\e[${fgbg};5;${color}m ${color}\t\e[0m"
+		  #Display 10 colors per lines
+		  if [ $((($color + 1) % 10)) == 0 ] ; then
+		      echo #New line
+		  fi
+	      done
+	      echo #New line
+	  done
+      }
+
+
+
+    #+END_SRC
