@@ -84,7 +84,101 @@
      alias ....='cd ../../..'
      alias .....='cd ../../../..'
 
+     # Files sizes
+     alias diskspace="du -S | sort -n -r |more"
+
+     # Show me the size (sorted) of only the folders in this directory
+     alias folders="find . -maxdepth 1 -type d -print | xargs du -skh | sort -rn"
+
    #+END_SRC
+*** Convenience functions
+    #+BEGIN_SRC sh
+      # Make directory then cd
+      mcd () { mkdir -p $1; cd $1; }
+
+      # Archives
+      function extract {
+	  if [ -z "$1" ]; then
+	      # display usage if no parameters given
+	      echo "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
+	      echo "       extract <path/file_name_1.ext> [path/file_name_2.ext] [path/file_name_3.ext]"
+	      return 1
+	  else
+	      for n in $@
+	      do
+		  if [ -f "$n" ] ; then
+		      case "${n%,}" in
+			  ,*.tar.bz2|*.tar.gz|*.tar.xz|*.tbz2|*.tgz|*.txz|*.tar) 
+			      tar xvf "$n"       ;;
+			  ,*.lzma)      unlzma ./"$n"      ;;
+			  ,*.bz2)       bunzip2 ./"$n"     ;;
+			  ,*.rar)       unrar x -ad ./"$n" ;;
+			  ,*.gz)        gunzip ./"$n"      ;;
+			  ,*.zip)       unzip ./"$n"       ;;
+			  ,*.z)         uncompress ./"$n"  ;;
+			  ,*.7z|*.arj|*.cab|*.chm|*.deb|*.dmg|*.iso|*.lzh|*.msi|*.rpm|*.udf|*.wim|*.xar)
+			      7z x ./"$n"        ;;
+			  ,*.xz)        unxz ./"$n"        ;;
+			  ,*.exe)       cabextract ./"$n"  ;;
+			  ,*)
+			      echo "extract: '$n' - unknown archive method"
+			      return 1
+			      ;;
+		      esac
+		  else
+		      echo "'$n' - file does not exist"
+		      return 1
+		  fi
+	      done
+	  fi
+      }
+
+      # Colors
+      # http://misc.flogisoft.com/bash/tip_colors_and_formatting
+      bash-color-16() {
+	  for clbg in {40..47} {100..107} 49 ; do
+	      #Foreground
+	      for clfg in {30..37} {90..97} 39 ; do
+		  #Formatting
+		  for attr in 0 1 2 4 5 7 ; do
+		      #Print the result
+		      echo -en "\e[${attr};${clbg};${clfg}m ^[${attr};${clbg};${clfg}m \e[0m"
+		  done
+		  echo #Newline
+	      done
+	  done
+      }
+
+      bash-color-256() {
+	  for fgbg in 38 48 ; do #Foreground/Background
+	      for color in {0..256} ; do #Colors
+		  #Display the color
+		  echo -en "\e[${fgbg};5;${color}m ${color}\t\e[0m"
+		  #Display 10 colors per lines
+		  if [ $((($color + 1) % 10)) == 0 ] ; then
+		      echo #New line
+		  fi
+	      done
+	      echo #New line
+	  done
+      }
+
+      make-scratch-dir () {
+	  local name="$1"
+	  local pattern='^[a-z0-9\\-]+$'
+	  if [[ "$#" != 1 ]]; then
+	      echo "Usage: make-scratch-dir <name>" 1>&2
+	      return 1
+	  elif [[ ! "$name" =~ $pattern ]]; then
+	      echo "Invalid name: ${name}"
+	  fi
+	  local full_path="$HOME/tmp/scratch/$(date +%Y%m%d-%H%M%S)-${name}"
+	  mkdir -p "${full_path}"
+	  pushd "${full_path}"
+	  echo "Now in temp dir: ${full_path}"
+      }
+
+    #+END_SRC
 *** Node/NVM
     Don't need this as nvm-install.sh will append to the .bashrc automatically as it depends on local configuration
    #+BEGIN_SRC sh :tangle no
