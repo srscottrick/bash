@@ -86,7 +86,8 @@
 
    #+END_SRC
 *** Node/NVM
-   #+BEGIN_SRC sh
+    Don't need this as nvm-install.sh will append to the .bashrc automatically as it depends on local configuration
+   #+BEGIN_SRC sh :tangle no
      # Node
      export NVM_DIR="$HOME/.nvm"
      [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
