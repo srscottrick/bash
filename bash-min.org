@@ -1,0 +1,100 @@
+* Bash Dot Files
+   :PROPERTIES:
+   :header-args: :tangle no :comments org
+   :END:
+** .bash_profile
+   .bash_profile: sourced on login shells, only used to source .bashrc
+   #+NAME: bash-profile
+   #+BEGIN_SRC sh
+     if [ -f ~/.bashrc ]; then
+         . ~/.bashrc;
+     fi
+   #+END_SRC
+
+** .bashrc and .bash_profile
+*** PATH
+    add home directory bin directory to path
+    #+NAME: bashrc-path
+    #+BEGIN_SRC sh
+      # Add home directory bin directory to PATH
+      export PATH=$PATH:~/bin
+
+    #+END_SRC
+
+*** DISPLAY
+    #+NAME: bashrc-display
+    #+BEGIN_SRC sh
+      # Setting DISPLAY for XWindows
+      export DISPLAY=localhost:0.0
+
+    #+END_SRC
+
+*** trash-cli
+    #+NAME: bashrc-trash-cli
+    #+BEGIN_SRC sh
+      # rm and del alises for trash-cli
+      alias rm='echo "Do not use rm, instead use del which is aliased to trash-put"'
+      alias del='trash-put'
+
+    #+END_SRC
+*** ls aliases
+    #+NAME: bashrc-ls-aliases
+    #+BEGIN_SRC sh
+      # ls aliases
+      alias ll='ls -Alh'
+      alias la='ls -lah'
+      alias l='ls -CFlh'
+      alias lsd="ls -alF | grep /$"
+      alias lr='ls -CFlhAR'
+
+    #+END_SRC
+*** miscellaneous aliases
+    #+NAME: bashrc-miscellaneous-aliases
+    #+BEGIN_SRC sh
+      # misc alises
+      alias c='clear'
+      alias h="history|grep "
+      alias f="find . |grep "
+
+    #+END_SRC
+*** cd aliases
+    #+NAME: bashrc-dir-aliases
+    #+BEGIN_SRC sh
+      # cd aliases
+      alias ..='cd ..'
+      alias ...='cd ../..'
+      alias ....='cd ../../..'
+      alias .....='cd ../../../..'
+
+    #+END_SRC
+*** file aliases
+    #+NAME: bashrc-files-aliases
+    #+BEGIN_SRC sh
+      # Misc Aliases For Files
+      # Files sizes
+      alias diskspace="du -S | sort -n -r |more"
+
+      # Show me the size (sorted) of only the folders in this directory
+      alias folders="find . -maxdepth 1 -type d -print | xargs du -skh | sort -rn"
+
+
+    #+END_SRC
+
+* noweb (writing files)
+** .bash_profile
+   org comments
+   #+BEGIN_SRC sh :tangle ~/.bash_profile :noweb yes :shebang #!/bin/sh :comments org
+   <<bash-profile>>
+   #+END_SRC
+
+** .bashrc
+   .bashrc: setting paths, xwindows display, shell aliases
+   #+BEGIN_SRC sh :tangle ~/.bashrc :noweb yes :shebang #!/bin/sh :comments org
+   <<bashrc-display>>
+   <<bashrc-path>>
+   <<bashrc-ls-aliases>>
+   <<bashrc-dir-aliases>>
+   <<bashrc-trash-cli>>
+   <<bashrc-miscellaneous-aliases>>
+   <<bashrc-files-aliases>>
+   #+END_SRC
