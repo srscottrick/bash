@@ -11,7 +11,7 @@
      fi
    #+END_SRC
 
-** .bashrc and .bash_profile
+** .bashrc
 *** PATH
     add home directory bin directory to path
     #+NAME: bashrc-path
@@ -79,7 +79,13 @@
 
 
     #+END_SRC
+*** Arch Linux Pacman Aliases
+    #+NAME: bashrc-pacman-aliases
+    #+BEGIN_SRC sh
+      # Arch Linux Pacman Commands
+      alias list-packages='echo "#######################"; echo "COMMAND: sudo pacman -Q"; echo "#######################"; sudo pacman -Q'
 
+    #+END_SRC
 * noweb (writing files)
 ** .bash_profile
    org comments
@@ -97,4 +103,5 @@
    <<bashrc-trash-cli>>
    <<bashrc-miscellaneous-aliases>>
    <<bashrc-files-aliases>>
+   <<bashrc-pacman-aliases>>
    #+END_SRC
