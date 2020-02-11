@@ -86,6 +86,82 @@
       alias list-packages='echo "#######################"; echo "COMMAND: sudo pacman -Q"; echo "#######################"; sudo pacman -Q'
 
     #+END_SRC
+*** History
+    #+NAME: bashrc-history-settings
+    #+BEGIN_SRC sh
+      export HISTFILESIZE=20000
+      export HISTSIZE=10000
+      shopt -s histappend
+      # Combine multiline commands into one in history
+      shopt -s cmdhist
+      # Ignore duplicates, ls without options and builtin commands
+      HISTCONTROL=ignoredups
+      export HISTIGNORE="&:ls:[bf]g:exit"
+
+    #+END_SRC
+*** Misc Shell Options
+    #+NAME: bashrc-shopts
+    #+BEGIN_SRC sh
+      # https://serverfault.com/questions/3743/what-useful-things-can-one-add-to-ones-bashrc
+      #
+      # This will prevent accidentally destroying the content of an already existing file if you redirect output (>filename).
+      # Force overwriting with >|filename.
+      shopt -o noclobber
+    #+END_SRC
+*** Man Page Settings
+    #+NAME: bashrc-manpage-settings
+    #+BEGIN_SRC sh
+      # https://serverfault.com/questions/3743/what-useful-things-can-one-add-to-ones-bashrc
+      manpage_color() {
+          export LESS_TERMCAP_mb=$'\E[01;31m'
+          export LESS_TERMCAP_md=$'\E[01;31m'
+          export LESS_TERMCAP_me=$'\E[0m'
+          export LESS_TERMCAP_se=$'\E[0m'
+          export LESS_TERMCAP_so=$'\E[01;44;33m'
+          export LESS_TERMCAP_ue=$'\E[0m'
+          export LESS_TERMCAP_us=$'\E[01;32m'
+      }
+      manpage_color
+
+    #+END_SRC
+*** Prompts
+    #+NAME: bashrc-prompts
+    #+BEGIN_SRC sh
+      # https://serverfault.com/questions/3743/what-useful-things-can-one-add-to-ones-bashrc
+      smiley_prompt() {
+          RESET="\[\017\]"
+          NORMAL="\[\033[0m\]"
+          RED="\[\033[31;1m\]"
+          YELLOW="\[\033[33;1m\]"
+          WHITE="\[\033[37;1m\]"
+          SMILEY="${WHITE}:)${NORMAL}"
+          FROWNY="${RED}:(${NORMAL}"
+          SELECT="if [ \$? = 0 ]; then echo \"${SMILEY}\"; else echo \"${FROWNY}\"; fi"
+
+          # Throw it all together 
+          PS1="${RESET}${YELLOW}\h${NORMAL} \`${SELECT}\` ${YELLOW}>${NORMAL} "
+      }
+
+      local_remote_prompt() {
+          local BLUE="\[\033[0;34m\]"
+          local NO_COLOUR="\[\033[0m\]"
+          local SSH_IP=`echo $SSH_CLIENT | awk '{ print $1 }'`
+          local SSH2_IP=`echo $SSH2_CLIENT | awk '{ print $1 }'`
+          if [ $SSH2_IP ] || [ $SSH_IP ] ; then
+              local SSH_FLAG="@\h"
+          fi
+          PS1="$BLUE[\$(date +%H:%M)][\u$SSH_FLAG:\w]\\$ $NO_COLOUR"
+          PS2="$BLUE>$NO_COLOUR "
+          PS4='$BLUE+$NO_COLOUR '
+      }
+    #+END_SRC
+*** Directory Up
+    #+NAME: bashrc-dirup
+    #+BEGIN_SRC sh
+      # https://serverfault.com/questions/3743/what-useful-things-can-one-add-to-ones-bashrc
+      dirup() { cd $(eval printf '../'%.0s {1..$1}) && pwd; }
+    #+END_SRC
+
 * noweb (writing files)
 ** .bash_profile
    org comments
@@ -96,12 +172,18 @@
 ** .bashrc
    .bashrc: setting paths, xwindows display, shell aliases
    #+BEGIN_SRC sh :tangle ~/.bashrc :noweb yes :shebang #!/bin/sh :comments org
-   <<bashrc-display>>
-   <<bashrc-path>>
-   <<bashrc-ls-aliases>>
-   <<bashrc-dir-aliases>>
-   <<bashrc-trash-cli>>
-   <<bashrc-miscellaneous-aliases>>
-   <<bashrc-files-aliases>>
-   <<bashrc-pacman-aliases>>
+     <<bashrc-display>>
+     <<bashrc-path>>
+     <<bashrc-ls-aliases>>
+     <<bashrc-dir-aliases>>
+     <<bashrc-trash-cli>>
+     <<bashrc-miscellaneous-aliases>>
+     <<bashrc-files-aliases>>
+     <<bashrc-pacman-aliases>>
+     <<bashrc-history-settings>>
+     <<bashrc-manpage-settings>>
+     <<bashrc-prompts>>
+     <<bashrc-dirup>>
+     <<bashrc-shopts>>
+     local_remote_prompt
    #+END_SRC
