@@ -161,7 +161,13 @@
       # https://serverfault.com/questions/3743/what-useful-things-can-one-add-to-ones-bashrc
       dirup() { cd $(eval printf '../'%.0s {1..$1}) && pwd; }
     #+END_SRC
-
+*** Python Web Server
+    #+NAME: bashrc-python-webserver
+    #+BEGIN_SRC sh
+      pws() {
+          python -m http.server 8000
+      }
+    #+END_SRC
 * noweb (writing files)
 ** .bash_profile
    org comments
@@ -184,6 +190,7 @@
      <<bashrc-manpage-settings>>
      <<bashrc-prompts>>
      <<bashrc-dirup>>
+     <<bashrc-python-webserver>>
      <<bashrc-shopts>>
      local_remote_prompt
    #+END_SRC
