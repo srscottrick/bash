@@ -96,7 +96,7 @@
       shopt -s cmdhist
       # Ignore duplicates, ls without options and builtin commands
       HISTCONTROL=ignoredups
-      export HISTIGNORE="&:ls:[bf]g:exit"
+      export HISTIGNORE="&:ls:l:c:[bf]g:exit"
 
     #+END_SRC
 *** Misc Shell Options
