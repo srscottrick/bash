@@ -32,6 +32,12 @@
       export HISTIGNORE="&:ls:l:c:[bf]g:exit"
 
     #+END_SRC
+*** History aliases
+    #+BEGIN_SRC bash
+      alias hg="history|grep "
+      alias h=history
+
+    #+END_SRC
 ** Noclobber
    This will prevent accidentally destroying the content of an already existing file if you redirect output (>filename).
    Force overwriting with >|filename.
@@ -111,7 +117,6 @@
     miscellaneous aliases
     #+BEGIN_SRC bash
       alias c='clear'
-      alias h="history|grep "
       alias f="find . |grep "
 
     #+END_SRC
