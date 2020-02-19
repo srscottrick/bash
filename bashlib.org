@@ -1,0 +1,146 @@
+* Bash Lib
+  :PROPERTIES:
+  :header-args: :tangle ~/.bash_lib :comments org
+  :END:
+** History
+*** History size and file size
+    #+BEGIN_SRC bash
+      export HISTFILESIZE=20000
+      export HISTSIZE=10000
+
+    #+END_SRC
+*** History Append
+    histappend:
+    If set, the history list is appended to the history file when the shell exits, rather than overwriting the history file.
+    To append every line to history individually set: "PROMPT_COMMAND='history -a'"
+    https://ss64.com/bash/shopt.html
+    
+    #+BEGIN_SRC bash
+      shopt -s histappend
+      PROMPT_COMMAND='history -a'
+    #+END_SRC
+*** History multi-line
+    If set, Bash attempts to save all lines of a multiple-line command in the same history entry. 
+    This allows easy re-editing of multi-line commands. 
+    #+BEGIN_SRC bash
+      shopt -s cmdhist
+    #+END_SRC
+*** History duplicates
+    Ignore duplicates, ls without options and builtin commands
+    #+BEGIN_SRC bash
+      HISTCONTROL=ignoredups
+      export HISTIGNORE="&:ls:l:c:[bf]g:exit"
+
+    #+END_SRC
+** Noclobber
+   This will prevent accidentally destroying the content of an already existing file if you redirect output (>filename).
+   Force overwriting with >|filename.
+   https://serverfault.com/questions/3743/what-useful-things-can-one-add-to-ones-bashrc
+   #+BEGIN_SRC bash
+     shopt -o noclobber
+   #+END_SRC
+** Man Pages
+   https://serverfault.com/questions/3743/what-useful-things-can-one-add-to-ones-bashrc
+   #+BEGIN_SRC bash
+     manpage_color() {
+         export LESS_TERMCAP_mb=$'\E[01;31m'
+         export LESS_TERMCAP_md=$'\E[01;31m'
+         export LESS_TERMCAP_me=$'\E[0m'
+         export LESS_TERMCAP_se=$'\E[0m'
+         export LESS_TERMCAP_so=$'\E[01;44;33m'
+         export LESS_TERMCAP_ue=$'\E[0m'
+         export LESS_TERMCAP_us=$'\E[01;32m'
+     }
+
+   #+END_SRC
+** Prompts
+   https://serverfault.com/questions/3743/what-useful-things-can-one-add-to-ones-bashrc
+   #+BEGIN_SRC bash
+     smiley_prompt() {
+         RESET="\[\017\]"
+         NORMAL="\[\033[0m\]"
+         RED="\[\033[31;1m\]"
+         YELLOW="\[\033[33;1m\]"
+         WHITE="\[\033[37;1m\]"
+         SMILEY="${WHITE}:)${NORMAL}"
+         FROWNY="${RED}:(${NORMAL}"
+         SELECT="if [ \$? = 0 ]; then echo \"${SMILEY}\"; else echo \"${FROWNY}\"; fi"
+
+         # Throw it all together 
+         PS1="${RESET}${YELLOW}\h${NORMAL} \`${SELECT}\` ${YELLOW}>${NORMAL} "
+     }
+
+     local_remote_prompt() {
+         local BLUE="\[\033[0;34m\]"
+         local NO_COLOUR="\[\033[0m\]"
+         local SSH_IP=`echo $SSH_CLIENT | awk '{ print $1 }'`
+         local SSH2_IP=`echo $SSH2_CLIENT | awk '{ print $1 }'`
+         if [ $SSH2_IP ] || [ $SSH_IP ] ; then
+             local SSH_FLAG="@\h"
+         fi
+         PS1="$BLUE[\$(date +%H:%M)][\u$SSH_FLAG:\w]\\$ $NO_COLOUR"
+         PS2="$BLUE>$NO_COLOUR "
+         PS4='$BLUE+$NO_COLOUR '
+     }
+
+   #+END_SRC
+** Directory Up Function
+   https://serverfault.com/questions/3743/what-useful-things-can-one-add-to-ones-bashrc
+   #+BEGIN_SRC bash
+     dirup() { cd $(eval printf '../'%.0s {1..$1}) && pwd; }
+   #+END_SRC
+** Aliases
+*** trash-cli
+    rm and del alises for trash-cli
+    #+BEGIN_SRC bash
+      alias rm='echo "Do not use rm, instead use del which is aliased to trash-put"'
+      alias del='trash-put'
+
+    #+END_SRC
+*** ls
+    aliases for ls
+    #+BEGIN_SRC bash
+      alias ll='ls -Alh'
+      alias la='ls -lah'
+      alias l='ls -CFlh'
+      alias lsd="ls -alF | grep /$"
+      alias lr='ls -CFlhAR'
+
+    #+END_SRC
+*** Miscellaneous
+    miscellaneous aliases
+    #+BEGIN_SRC bash
+      alias c='clear'
+      alias h="history|grep "
+      alias f="find . |grep "
+
+    #+END_SRC
+*** File alises
+**** File sizes
+     #+BEGIN_SRC bash
+       alias diskspace="du -S | sort -n -r |more"
+
+     #+END_SRC
+**** Directory sizes
+     Show me the size (sorted) of only the folders in this directory
+     #+BEGIN_SRC bash
+       alias folders="find . -maxdepth 1 -type d -print | xargs du -skh | sort -rn"
+
+     #+END_SRC
+*** cd aliases
+    alises for multi-level cd
+    #+BEGIN_SRC bash
+      alias ..='cd ..'
+      alias ...='cd ../..'
+      alias ....='cd ../../..'
+      alias .....='cd ../../../..'
+
+    #+END_SRC
+** DISPLAY for X11
+   #+BEGIN_SRC bash
+     export DISPLAY=localhost:0.0
+   #+END_SRC
+** Add ~/.bin to $PATH
+   #+BEGIN_SRC bash
+     export PATH=$PATH:~/bin
+   #+END_SRC
